@@ -24,8 +24,40 @@ export async function uploadToR2(file: File): Promise<string> {
 }
 
 export async function deleteFromR2(imageUrl: string): Promise<void> {
-  if (!R2_PUBLIC_URL) return;
+  if (!R2_UPLOAD_URL || !R2_PUBLIC_URL) return;
+
   const key = imageUrl.replace(R2_PUBLIC_URL + '/', '');
   if (!key || key === imageUrl) return;
-  console.warn('Delete not implemented via Worker:', key);
+
+  const response = await fetch(R2_UPLOAD_URL, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ keys: [key] }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    console.error(`R2 delete failed (${response.status}): ${text}`);
+  }
+}
+
+export async function deleteMultipleFromR2(imageUrls: string[]): Promise<void> {
+  if (!R2_UPLOAD_URL || !R2_PUBLIC_URL || imageUrls.length === 0) return;
+
+  const keys = imageUrls
+    .map((url) => url.replace(R2_PUBLIC_URL + '/', ''))
+    .filter((key) => key && key !== '');
+
+  if (keys.length === 0) return;
+
+  const response = await fetch(R2_UPLOAD_URL, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ keys }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    console.error(`R2 bulk delete failed (${response.status}): ${text}`);
+  }
 }

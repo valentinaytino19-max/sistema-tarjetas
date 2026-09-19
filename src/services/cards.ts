@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { deleteMultipleFromR2 } from '../lib/r2';
 import type { Card } from '../types';
 
 function mapRow(row: Record<string, unknown>): Card {
@@ -74,6 +75,16 @@ export async function restoreCard(cardId: string): Promise<void> {
 }
 
 export async function permanentDeleteCards(cardIds: string[]): Promise<void> {
+  const { data, error: fetchError } = await supabase
+    .from('cards')
+    .select('image_url')
+    .in('id', cardIds);
+
+  if (fetchError) throw fetchError;
+
+  const imageUrls = (data || []).map((r) => r.image_url as string);
+  await deleteMultipleFromR2(imageUrls);
+
   const { error } = await supabase
     .from('cards')
     .delete()
