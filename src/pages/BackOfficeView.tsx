@@ -294,7 +294,7 @@ export default function BackOfficeView({ cards, groups, onSoftDelete, onGroupsCh
           </TabsList>
         </div>
 
-        <div className="p-5">
+          <div className="p-4 sm:p-5">
           <TabsContent value="groups">
             <motion.div
               key="groups-tab"
@@ -304,7 +304,7 @@ export default function BackOfficeView({ cards, groups, onSoftDelete, onGroupsCh
               exit="exit"
               transition={{ duration: 0.3 }}
             >
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
                 <h2 className="text-lg font-bold text-foreground">Zonas / Grupos</h2>
                 <motion.div variants={buttonHover} initial="rest" whileHover="hover">
                   <Button
@@ -319,7 +319,7 @@ export default function BackOfficeView({ cards, groups, onSoftDelete, onGroupsCh
 
               {/* Group Form Dialog */}
               <Dialog open={showGroupForm} onOpenChange={setShowGroupForm}>
-                <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto mx-4 sm:mx-auto">
                   <DialogHeader>
                     <DialogTitle>
                       {editingGroup ? 'Editar Grupo' : showAddSubgroup ? 'Nuevo Subgrupo' : 'Nuevo Grupo'}
@@ -714,7 +714,7 @@ export default function BackOfficeView({ cards, groups, onSoftDelete, onGroupsCh
 
       {/* Move Modal */}
       <Dialog open={showMoveModal} onOpenChange={setShowMoveModal}>
-        <DialogContent className="max-w-sm">
+        <DialogContent className="max-w-sm mx-4 sm:mx-auto">
           <DialogHeader>
             <DialogTitle>Mover {selectedCards.size} tarjeta(s) a...</DialogTitle>
             <DialogDescription>
@@ -746,7 +746,7 @@ export default function BackOfficeView({ cards, groups, onSoftDelete, onGroupsCh
 
       {/* Send to Trash Confirmation */}
       <Dialog open={showTrashConfirm} onOpenChange={setShowTrashConfirm}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md mx-4 sm:mx-auto">
           <DialogHeader>
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-warning/10 rounded-2xl flex items-center justify-center shrink-0">
@@ -789,7 +789,7 @@ export default function BackOfficeView({ cards, groups, onSoftDelete, onGroupsCh
               onClick={() => setGroupToDelete(null)}
             />
             <motion.div
-              className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 bg-white rounded-3xl shadow-2xl p-6 space-y-5"
+              className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 bg-white rounded-3xl shadow-2xl p-6 space-y-5"
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}

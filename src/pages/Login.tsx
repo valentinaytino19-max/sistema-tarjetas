@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { CreditCard } from '@phosphor-icons/react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -53,11 +52,11 @@ export default function Login() {
       >
         <motion.div className="text-center mb-8" variants={itemVariants}>
           <motion.div
-            className="w-16 h-16 bg-primary rounded-3xl flex items-center justify-center mx-auto mb-5"
+            className="w-16 h-16 rounded-3xl overflow-hidden mx-auto mb-5"
             whileHover={{ rotate: 8, scale: 1.05 }}
             transition={{ type: 'spring' as const, stiffness: 400, damping: 10 }}
           >
-            <CreditCard className="w-8 h-8 text-primary-foreground" />
+            <img src="/logo.jpg" alt="Sistema Tarjetas" className="w-full h-full object-cover" />
           </motion.div>
           <h1 className="text-2xl font-bold text-foreground">Bienvenido</h1>
           <p className="text-muted-foreground mt-1 text-sm">Ingresa tus credenciales para continuar</p>

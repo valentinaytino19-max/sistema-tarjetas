@@ -137,7 +137,7 @@ export default function Layout({ children, currentView, onViewChange, trashCount
       </AnimatePresence>
 
       <div className="flex-1 flex flex-col min-w-0 lg:ml-60">
-        <header className="h-16 bg-background/80 backdrop-blur-xl flex items-center px-6 gap-4 sticky top-0 z-20">
+        <header className="h-14 sm:h-16 bg-background/80 backdrop-blur-xl flex items-center px-4 sm:px-6 gap-4 sticky top-0 z-20">
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setMobileOpen(true)}
@@ -156,7 +156,7 @@ export default function Layout({ children, currentView, onViewChange, trashCount
           </div>
         </header>
 
-        <main className="flex-1 overflow-auto p-4 lg:p-6">
+        <main className="flex-1 overflow-auto p-3 sm:p-4 lg:p-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentView}

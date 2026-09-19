@@ -210,7 +210,7 @@ export default function FrontendView({ cards, groups, onSoftDelete, onUpload }: 
   return (
     <div className="min-h-full">
       {/* Header bento */}
-      <div className="bg-white rounded-3xl sticky top-0 z-20 p-5">
+      <div className="bg-white rounded-3xl sticky top-0 z-20 p-4 sm:p-5">
         <div className="space-y-4">
           {navStack.length > 0 ? (
             <GroupBreadcrumb chain={navStack} onNavigate={navigateTo} />
@@ -221,7 +221,7 @@ export default function FrontendView({ cards, groups, onSoftDelete, onUpload }: 
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="relative">
               <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
@@ -257,7 +257,7 @@ export default function FrontendView({ cards, groups, onSoftDelete, onUpload }: 
       </div>
 
       {/* Content */}
-      <div className="p-5 space-y-5">
+      <div className="p-4 sm:p-5 space-y-5">
         <AnimatePresence mode="wait">
           <motion.div key={currentGroup?.id || 'root'} {...pageTransition}>
             {showSubgroups && (
@@ -320,7 +320,7 @@ export default function FrontendView({ cards, groups, onSoftDelete, onUpload }: 
                             e.stopPropagation();
                             handleDeleteCard(card.id);
                           }}
-                           className="absolute top-2 right-2 bg-destructive/80 hover:bg-destructive text-destructive-foreground rounded-full p-1.5 z-10 opacity-0 group-hover:opacity-100 transition-all duration-200"
+                           className="absolute top-2 right-2 bg-destructive/80 hover:bg-destructive text-destructive-foreground rounded-full p-1.5 z-10 sm:opacity-0 sm:group-hover:opacity-100 opacity-100 transition-all duration-200"
                           title="Enviar a papelera"
                         >
                           <Trash className="w-3.5 h-3.5" />
@@ -420,7 +420,7 @@ export default function FrontendView({ cards, groups, onSoftDelete, onUpload }: 
           if (!open) setShowDeleteConfirm(null);
         }}
       >
-        <DialogContent className="max-w-md rounded-3xl">
+        <DialogContent className="max-w-md rounded-3xl mx-4 sm:mx-auto">
           <DialogHeader>
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-warning/10 rounded-full flex items-center justify-center shrink-0">
@@ -472,7 +472,7 @@ export default function FrontendView({ cards, groups, onSoftDelete, onUpload }: 
               onClick={() => setSelectedCard(null)}
             />
             <motion.div
-              className="fixed left-1/2 top-1/2 z-50 w-full max-w-3xl -translate-x-1/2 -translate-y-1/2 bg-white rounded-3xl overflow-hidden shadow-2xl"
+              className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-3xl -translate-x-1/2 -translate-y-1/2 bg-white rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] overflow-y-auto"
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
