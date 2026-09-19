@@ -39,7 +39,7 @@ export default function Card({ card, onClick }: Props) {
           </p>
         </div>
 
-        <div className="absolute top-2.5 right-2.5">
+        <div className="absolute top-2.5 left-2.5">
           <span className="bg-white/20 backdrop-blur-md text-white text-[11px] px-2.5 py-1 rounded-xl font-medium">
             {card.groupName}
           </span>
