@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Image, CaretDown, Pencil, Trash, ArrowsLeftRight, Check, Warning, Palette, Smiley, Camera } from '@phosphor-icons/react';
 import type { Group, Card as CardType, IdentifierType } from '../types';
 import { createGroup, updateGroup, deleteGroups } from '../services/groups';
-import { moveCards as moveCardsService } from '../services/cards';
+import { softDeleteCards as softDeleteCardsService } from '../services/cards';
 import { uploadToR2 } from '../lib/r2';
+import { useToast } from '../components/ui/toast';
 import PhosphorIcon from '../components/PhosphorIcon';
 import { ICON_PRESETS, DEFAULT_ICON } from '../constants/icons';
 import { Button } from '../components/ui/button';
@@ -83,9 +84,11 @@ interface Props {
   groups: Group[];
   onSoftDelete: (cardIds: string[]) => void;
   onGroupsChange: (groups: Group[]) => void;
+  onMoveCards?: (cardIds: string[], targetGroupId: string, targetGroupName: string) => void;
 }
 
-export default function BackOfficeView({ cards, groups, onSoftDelete, onGroupsChange }: Props) {
+export default function BackOfficeView({ cards, groups, onSoftDelete, onGroupsChange, onMoveCards }: Props) {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'groups' | 'files'>('groups');
   const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set());
   const [editingGroup, setEditingGroup] = useState<Group | null>(null);
@@ -205,10 +208,19 @@ export default function BackOfficeView({ cards, groups, onSoftDelete, onGroupsCh
     const descendantIds = getDescendantIds(groups, groupToDelete.id);
     const idsToRemove = [groupToDelete.id, ...descendantIds];
     try {
+      const orphanedCardIds = cards
+        .filter((c) => idsToRemove.includes(c.groupId))
+        .map((c) => c.id);
+      if (orphanedCardIds.length > 0) {
+        await softDeleteCardsService(orphanedCardIds);
+        onSoftDelete(orphanedCardIds);
+      }
       await deleteGroups(idsToRemove);
       onGroupsChange(groups.filter((g) => !idsToRemove.includes(g.id)));
+      toast('success', `Grupo eliminado. ${orphanedCardIds.length} tarjeta(s) movida(s) a papelera.`);
     } catch (err) {
       console.error('Error deleting groups:', err);
+      toast('error', 'Error al eliminar el grupo.');
     } finally {
       setGroupToDelete(null);
       setDeleteConfirmText('');
@@ -235,13 +247,11 @@ export default function BackOfficeView({ cards, groups, onSoftDelete, onGroupsCh
   const handleMoveCards = async (targetGroupId: string) => {
     const targetGroup = groups.find((g) => g.id === targetGroupId);
     if (!targetGroup) return;
-    try {
-      await moveCardsService(Array.from(selectedCards), targetGroupId, targetGroup.name);
-      setSelectedCards(new Set());
-      setShowMoveModal(false);
-    } catch (err) {
-      console.error('Error moving cards:', err);
+    if (onMoveCards) {
+      await onMoveCards(Array.from(selectedCards), targetGroupId, targetGroup.name);
     }
+    setSelectedCards(new Set());
+    setShowMoveModal(false);
   };
 
   const handleSendToTrash = () => {
@@ -319,7 +329,8 @@ export default function BackOfficeView({ cards, groups, onSoftDelete, onGroupsCh
 
               {/* Group Form Dialog */}
               <Dialog open={showGroupForm} onOpenChange={setShowGroupForm}>
-                <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto mx-4 sm:mx-auto">
+                <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto p-0 rounded-3xl mx-4 sm:mx-auto">
+                  <div className="p-5 sm:p-6">
                   <DialogHeader>
                     <DialogTitle>
                       {editingGroup ? 'Editar Grupo' : showAddSubgroup ? 'Nuevo Subgrupo' : 'Nuevo Grupo'}
@@ -494,6 +505,7 @@ export default function BackOfficeView({ cards, groups, onSoftDelete, onGroupsCh
                       {saving ? 'Guardando...' : editingGroup ? 'Guardar' : 'Crear'}
                     </Button>
                   </div>
+                  </div>
                 </DialogContent>
               </Dialog>
 
@@ -651,6 +663,13 @@ export default function BackOfficeView({ cards, groups, onSoftDelete, onGroupsCh
                 </Button>
               </div>
 
+              {cards.length === 0 ? (
+                <div className="py-16 text-center">
+                  <Image className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
+                  <p className="text-sm font-medium text-muted-foreground">No hay archivos subidos</p>
+                  <p className="text-xs text-muted-foreground/60 mt-1">Sube imágenes desde la vista de zonas</p>
+                </div>
+              ) : (
               <motion.div
                 className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
                 variants={staggerContainer}
@@ -707,6 +726,7 @@ export default function BackOfficeView({ cards, groups, onSoftDelete, onGroupsCh
                   );
                 })}
               </motion.div>
+              )}
             </motion.div>
           </TabsContent>
         </div>

@@ -21,6 +21,7 @@ interface Props {
   groups: Group[];
   onSoftDelete: (cardIds: string[]) => void;
   onUpload: (files: File[], groupId: string, groupName: string) => void;
+  isUploading?: boolean;
 }
 
 const pageTransition = {
@@ -117,7 +118,7 @@ function GroupHeader({ group, count }: { group: Group; count: number }) {
   );
 }
 
-export default function FrontendView({ cards, groups, onSoftDelete, onUpload }: Props) {
+export default function FrontendView({ cards, groups, onSoftDelete, onUpload, isUploading }: Props) {
   const [navStack, setNavStack] = useState<Group[]>([]);
   const [searchClient, setSearchClient] = useState('');
   const [searchDate, setSearchDate] = useState('');
@@ -162,8 +163,7 @@ export default function FrontendView({ cards, groups, onSoftDelete, onUpload }: 
 
     let matchGroup = false;
     if (currentGroup) {
-      const descendantIds = getDescendantIds(currentGroup.id);
-      matchGroup = descendantIds.includes(card.groupId);
+      matchGroup = card.groupId === currentGroup.id;
     }
 
     return matchClient && matchDate && matchZone && (currentGroup ? matchGroup : true);
@@ -407,7 +407,7 @@ export default function FrontendView({ cards, groups, onSoftDelete, onUpload }: 
               )}
             </AnimatePresence>
             <motion.button
-              className="fixed bottom-6 right-6 z-30 w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg"
+              className="fixed bottom-6 right-6 z-30 w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg disabled:opacity-50"
               onClick={() => setShowUploadMenu(!showUploadMenu)}
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -416,8 +416,13 @@ export default function FrontendView({ cards, groups, onSoftDelete, onUpload }: 
               whileTap={{ scale: 0.95 }}
               transition={{ type: 'spring' as const, stiffness: 400, damping: 20 }}
               aria-label="Subir imagen"
+              disabled={isUploading}
             >
-              <Plus className="w-6 h-6" />
+              {isUploading ? (
+                <div className="w-6 h-6 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Plus className="w-6 h-6" />
+              )}
             </motion.button>
           </>
         )}
