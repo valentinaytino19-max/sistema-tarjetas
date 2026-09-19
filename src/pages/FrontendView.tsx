@@ -128,6 +128,16 @@ export default function FrontendView({ cards, groups, onSoftDelete, onUpload }: 
   const currentParentId = navStack.length > 0 ? navStack[navStack.length - 1].id : undefined;
   const currentGroup = navStack.length > 0 ? navStack[navStack.length - 1] : null;
 
+  const getGroupPath = (groupId: string): string => {
+    const parts: string[] = [];
+    let current = groups.find((g) => g.id === groupId);
+    while (current) {
+      parts.unshift(current.name);
+      current = current.parentId ? groups.find((g) => g.id === current!.parentId) : undefined;
+    }
+    return parts.join(' / ');
+  };
+
   const getDescendantIds = (groupId: string): string[] => {
     const children = groups.filter((g) => g.parentId === groupId);
     let ids: string[] = [groupId];
@@ -506,8 +516,20 @@ export default function FrontendView({ cards, groups, onSoftDelete, onUpload }: 
                       </div>
                       <div className="h-px bg-border" />
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Grupo</span>
-                        <span className="text-sm font-medium text-foreground">{selectedCard.groupName}</span>
+                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Hora</span>
+                        <span className="text-sm font-medium text-foreground">
+                          {new Date(selectedCard.date).toLocaleTimeString('es-ES', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
+                      </div>
+                      <div className="h-px bg-border" />
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide shrink-0">Ruta</span>
+                        <span className="text-sm font-medium text-foreground text-right">
+                          {getGroupPath(selectedCard.groupId)}
+                        </span>
                       </div>
                       <div className="h-px bg-border" />
                       <div className="flex items-center justify-between">
