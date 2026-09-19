@@ -320,10 +320,10 @@ export default function FrontendView({ cards, groups, onSoftDelete, onUpload }: 
                             e.stopPropagation();
                             handleDeleteCard(card.id);
                           }}
-                           className="absolute top-2 right-2 bg-destructive/80 hover:bg-destructive text-destructive-foreground rounded-full p-1.5 z-10 sm:opacity-0 sm:group-hover:opacity-100 opacity-100 transition-all duration-200"
+                           className="absolute bottom-2 left-2 bg-destructive/80 hover:bg-destructive text-destructive-foreground rounded-xl p-2.5 z-10 sm:opacity-0 sm:group-hover:opacity-100 opacity-100 transition-all duration-200 shadow-lg"
                           title="Enviar a papelera"
                         >
-                          <Trash className="w-3.5 h-3.5" />
+                          <Trash className="w-4 h-4" />
                         </button>
                       </motion.div>
                     ))}
