@@ -12,7 +12,7 @@ import { uploadToR2, deleteMultipleFromR2 } from './lib/r2';
 import { useToast } from './components/ui/toast';
 
 function AppContent() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   const [currentView, setCurrentView] = useState<'frontend' | 'backoffice' | 'trash'>('frontend');
   const [groups, setGroups] = useState<Group[]>([]);
@@ -169,6 +169,17 @@ function AppContent() {
   const handleGroupsChange = (updatedGroups: Group[]) => {
     setGroups(updatedGroups);
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-3">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-sm text-muted-foreground">Verificando sesión...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return <Login />;

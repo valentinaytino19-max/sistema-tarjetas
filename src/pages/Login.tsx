@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Envelope, Lock, Warning } from '@phosphor-icons/react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -19,16 +20,25 @@ const itemVariants = {
 };
 
 export default function Login() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!login(username, password)) {
-      setError('Credenciales incorrectas. Usa admin / admin');
+    if (!email || !password) {
+      setError('Completa todos los campos');
+      return;
     }
+    setLoading(true);
+    setError('');
+    const { error: authError } = await login(email, password);
+    if (authError) {
+      setError('Credenciales incorrectas');
+    }
+    setLoading(false);
   };
 
   return (
@@ -65,46 +75,57 @@ export default function Login() {
         <motion.div className="bg-white rounded-3xl p-6" variants={itemVariants}>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Usuario</Label>
-              <Input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => { setUsername(e.target.value); setError(''); }}
-                placeholder="admin"
-              />
+              <Label htmlFor="email">Correo</Label>
+              <div className="relative">
+                <Envelope className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); setError(''); }}
+                  placeholder="correo@ejemplo.com"
+                  className="pl-10"
+                  autoComplete="email"
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Contrasena</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => { setPassword(e.target.value); setError(''); }}
-                placeholder="admin"
-              />
+              <Label htmlFor="password">Contraseña</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => { setPassword(e.target.value); setError(''); }}
+                  placeholder="••••••••"
+                  className="pl-10"
+                  autoComplete="current-password"
+                />
+              </div>
             </div>
 
             {error && (
               <motion.div
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-destructive/10 text-destructive px-4 py-2.5 rounded-xl text-sm font-medium"
+                className="flex items-center gap-2 bg-destructive/10 text-destructive px-4 py-2.5 rounded-xl text-sm font-medium"
               >
+                <Warning className="w-4 h-4 shrink-0" />
                 {error}
               </motion.div>
             )}
 
-            <Button type="submit" className="w-full h-12 text-sm">
-              Iniciar Sesion
+            <Button type="submit" className="w-full h-12 text-sm" disabled={loading}>
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+              ) : (
+                'Iniciar Sesión'
+              )}
             </Button>
           </form>
         </motion.div>
-
-        <motion.p className="text-center text-xs text-muted-foreground mt-5" variants={itemVariants}>
-          admin / admin
-        </motion.p>
       </motion.div>
     </div>
   );
